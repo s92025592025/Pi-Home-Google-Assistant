@@ -83,6 +83,7 @@ AudioConfig(){
 		echo "Testing mic...."
 		arecord --format=S16_LE --duration=5 --rate=16000 --file-type=raw out.raw
 		aplay --format=S16_LE --rate=16000 out.raw
+		AdjustVolumn		
 		read -p "Wanna try again? (Y/N)" response
 		if [ $response = "Y" ] || [ $response = "y" ]
 		then
@@ -92,8 +93,70 @@ AudioConfig(){
 		fi
 	done
 
-	# clean up leftover files
-	sudo rm -f out.raw
+	# need valid response before next step
+	validResponse=false
+	while [ validResponse = false ]
+	do
+		read -p "Does the mic work? (Y/N) " response
+		if [ $response = "N" ] || [ $response = "n" ]
+		then
+			testFail=true
+			validResponse=true
+		elif [ $response = "Y" ] || [ $response = "y" ]
+			validResponse=true
+		then
+		fi
+	done
+
+	# things to do if one of the audio device failed
+	if [ $testFail = true ]
+	then
+		echo "Now you need to configure your audio device settings....."
+		# find targeted speaker
+		echo "Here are a list of speaker devices..."
+		aplay -l
+		while [ $speakerCard !=~ ^[0-9]+$] || [ $speakerDevice !=~ ^[0-9]+$]
+		do
+			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " speakerCard
+			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " speakerDevice
+		done
+
+		# find targeted mic
+		echo "Here are a list of mic devices..."
+		arecord -l
+		while [ $micCard !=~ ^[0-9]+$] || [ $micDevice !=~ ^[0-9]+$]
+		do
+			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " micCard
+			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " micDevice
+		done
+
+		# make .asoundrc in root
+		sudo touch /home/pi/.asoundrc
+		sudo echo  'pcm.!default {
+					  type asym
+					  capture.pcm "mic"
+					  playback.pcm "speaker"
+					}
+					pcm.mic {
+					  type plug
+					  slave {
+					    pcm "hw:$micCard,$micDevice"
+					  }
+					}
+					pcm.speaker {
+					  type plug
+					  slave {
+					    pcm "hw:$speakerCard,$speakerDevice"
+					  }
+					}' >> /home/pi/.asoundrc
+
+		# rerun the config
+		echo "Start re-configure"
+		AudioConfig
+	else
+		# clean up leftover files
+		sudo rm -f out.raw
+	fi
 }
 
 checkInternet
