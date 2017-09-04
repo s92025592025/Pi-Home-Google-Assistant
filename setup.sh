@@ -20,7 +20,7 @@ checkInternet(){
 	if [ $? -eq 0 ]
 	then
 		echo "Internet connection OK, updating dependencies"
-		#sudo apt-get update
+		sudo apt-get update
 	else
 		# so if no internet
 		read -p "Please check your internet connection. enter Y when done..... " response
@@ -172,7 +172,7 @@ pcm.speaker {
 
 checkInternet
 
-#AudioConfig
+AudioConfig
 
 ##################
 ### API Config ###
