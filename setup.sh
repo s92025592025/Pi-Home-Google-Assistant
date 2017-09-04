@@ -219,7 +219,11 @@ google-oauthlib-tool --client-secrets $authLocation --scope https://www.googleap
 #############################
 
 # make a little script to start enviroment and assistant demo
-cp startGoogleAssistant.sh /home/pi/
+touch /home/pi/startGoogleAssistant.sh
+echo "#! /bin/sh
+
+source /home/pi/env/bin/activate
+/home/pi/env/bin/google-assistant-demo" >> /home/pi/startGoogleAssistant.sh
 chmod 775 startGoogleAssistant.sh
 
 echo "/home/pi/startGoogleAssistant.sh" >> /home/pi/.config/lxsession/LXDE-pi/autostart
