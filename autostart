@@ -1,0 +1,7 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@point-rpi
+
+# this is under /home/pi/.config/lxsession/LXDE-pi/
+/home/pi/startGoogleAssistant.sh
