@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# switch to root
+cd ~
+
 echo "Welcome to the setup of your home made Google Home!"
 
 # Pre : the first thing to start the script 
@@ -13,7 +16,7 @@ checkInternet(){
 	if [ $? -eq 0 ]
 	then
 		echo "Internet connection OK, updating dependencies"
-		sudo apt-get update
+		#sudo apt-get update
 	else
 		# so if no internet
 		read -p "Please check your internet connection. enter Y when done..... " response
@@ -31,14 +34,14 @@ checkInternet(){
 # Post: will bring up the alsamixer
 AdjustVolumn(){
 	read -p "Wanna to adjust volumn? (Y/N)" response
-	if [ $response = "Y"] || [ $response = "y"]
+	if [ $response = "Y" ] || [ $response = "y" ]
 	then
 		alsamixer
 	fi
 }
 
 # Pre : After the internt is secured, start testing audio input and output
-# Post:
+# Post: make the correct audio config for user
 AudioConfig(){
 	echo "Start configuring audio devices....."
 
@@ -47,7 +50,7 @@ AudioConfig(){
 
 	# start playing test sound for a 5 rounds
 	retry=true
-	while [ retry = true ]
+	while [ $retry = true ]
 	do
 		echo "Testing speakers...."
 		speaker-test -l 5 -t wav
@@ -63,7 +66,7 @@ AudioConfig(){
 
 	# need valid response before next step
 	validResponse=false
-	while [ validResponse = false ]
+	while [ $validResponse = false ]
 	do
 		read -p "Can you hear anything? (Y/N) " response
 		if [ $response = "N" ] || [ $response = "n" ]
@@ -71,14 +74,14 @@ AudioConfig(){
 			testFail=true
 			validResponse=true
 		elif [ $response = "Y" ] || [ $response = "y" ]
-			validResponse=true
 		then
+			validResponse=true
 		fi
 	done
 
 	# start mic testing
 	retry=true
-	while [ retry = true ]
+	while [ $retry = true ]
 	do
 		echo "Testing mic...."
 		arecord --format=S16_LE --duration=5 --rate=16000 --file-type=raw out.raw
@@ -95,7 +98,7 @@ AudioConfig(){
 
 	# need valid response before next step
 	validResponse=false
-	while [ validResponse = false ]
+	while [ $validResponse = false ]
 	do
 		read -p "Does the mic work? (Y/N) " response
 		if [ $response = "N" ] || [ $response = "n" ]
@@ -103,8 +106,8 @@ AudioConfig(){
 			testFail=true
 			validResponse=true
 		elif [ $response = "Y" ] || [ $response = "y" ]
-			validResponse=true
 		then
+			validResponse=true
 		fi
 	done
 
@@ -115,7 +118,7 @@ AudioConfig(){
 		# find targeted speaker
 		echo "Here are a list of speaker devices..."
 		aplay -l
-		while [ $speakerCard !=~ ^[0-9]+$] || [ $speakerDevice !=~ ^[0-9]+$]
+		while [[ $((speakerCard)) != $speakerCard ]] || [[ $((speakerDevice)) != $speakerDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " speakerCard
 			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " speakerDevice
@@ -124,31 +127,33 @@ AudioConfig(){
 		# find targeted mic
 		echo "Here are a list of mic devices..."
 		arecord -l
-		while [ $micCard !=~ ^[0-9]+$] || [ $micDevice !=~ ^[0-9]+$]
+		while [[ $((micCard)) != $micCard ]] || [[ $((micDevice)) != $micDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " micCard
 			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " micDevice
 		done
 
+		# clear the previous bad config
+		rm -f /home/pi/.asoundrc
 		# make .asoundrc in root
-		sudo touch /home/pi/.asoundrc
-		sudo echo  'pcm.!default {
-					  type asym
-					  capture.pcm "mic"
-					  playback.pcm "speaker"
-					}
-					pcm.mic {
-					  type plug
-					  slave {
-					    pcm "hw:$micCard,$micDevice"
-					  }
-					}
-					pcm.speaker {
-					  type plug
-					  slave {
-					    pcm "hw:$speakerCard,$speakerDevice"
-					  }
-					}' >> /home/pi/.asoundrc
+		touch /home/pi/.asoundrc
+		echo "pcm.!default {
+  type asym
+  capture.pcm \"mic\"
+  playback.pcm \"speaker\"
+}
+pcm.mic {
+  type plug
+  slave {
+    pcm \"hw:${micCard},${micDevice}\"
+  }
+}
+pcm.speaker {
+ type plug
+ slave {
+ pcm \"hw:${speakerCard},${speakerDevice}\"
+ }
+}" >> /home/pi/.asoundrc
 
 		# rerun the config
 		echo "Start re-configure"
@@ -160,3 +165,5 @@ AudioConfig(){
 }
 
 checkInternet
+
+AudioConfig
