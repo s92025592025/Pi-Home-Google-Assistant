@@ -37,7 +37,7 @@ checkInternet(){
 # Pre : whenever need to suggest users to adjust volumn of the speaker or mic
 # Post: will bring up the alsamixer
 AdjustVolumn(){
-	read -p "Wanna to adjust volumn? (Y/N)" response
+	read -p "Wanna to adjust volumn? (Y/N) " response
 	if [ $response = "Y" ] || [ $response = "y" ]
 	then
 		alsamixer
@@ -59,7 +59,7 @@ AudioConfig(){
 		echo "Testing speakers...."
 		speaker-test -l 5 -t wav
 		AdjustVolumn
-		read -p "Wanna try again? (Y/N)" response
+		read -p "Wanna try again? (Y/N) " response
 		if [ $response = "Y" ] || [ $response = "y" ]
 		then
 			retry=true
@@ -91,7 +91,7 @@ AudioConfig(){
 		arecord --format=S16_LE --duration=5 --rate=16000 --file-type=raw out.raw
 		aplay --format=S16_LE --rate=16000 out.raw
 		AdjustVolumn		
-		read -p "Wanna try again? (Y/N)" response
+		read -p "Wanna try again? (Y/N) " response
 		if [ $response = "Y" ] || [ $response = "y" ]
 		then
 			retry=true
@@ -125,7 +125,7 @@ AudioConfig(){
 		while [[ $((speakerCard)) != $speakerCard ]] || [[ $((speakerDevice)) != $speakerDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " speakerCard
-			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " speakerDevice
+			read -p "What is the device number you want to use? (Mostly 0) " speakerDevice
 		done
 
 		# find targeted mic
@@ -134,7 +134,7 @@ AudioConfig(){
 		while [[ $((micCard)) != $micCard ]] || [[ $((micDevice)) != $micDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " micCard
-			read -p "What is the device number you want to use? (on board port goes for 1, external sound card mostly 0) " micDevice
+			read -p "What is the device number you want to use? (Mostly 0) " micDevice
 		done
 
 		# clear the previous bad config
@@ -180,11 +180,10 @@ AudioConfig
 
 echo "Audio config complete, please head to https://developers.google.com/assistant/sdk/develop/python/config-dev-project-and-account to enable API"
 
-# Wait for user to choose which method to download auth file
 response="N"
 while [ $response != "Y" ]
 do
-	read -p "When you finished all steps, please enter Y " response
+	read -p "When you finished all steps, please enter Y: " response
 done
 
 ########################
@@ -198,8 +197,8 @@ sudo apt-get update
 
 # WARNING!!! This is for PYTHON 3
 sudo apt-get install python3-dev python3-venv
+echo "Starting Python enviroment"
 python3 -m venv env
-echo "Installing python tool"
 env/bin/python -m pip install --upgrade pip setuptools
 source env/bin/activate
 python -m pip install --upgrade google-assistant-library
@@ -211,7 +210,6 @@ do
 	read -p "Please enter the ABSOLUTE FILE PATH to your auth json: " authLocation
 done
 
-# CAUTION!! Not sude how to use varables in commands
 google-oauthlib-tool --client-secrets $authLocation --scope https://www.googleapis.com/auth/assistant-sdk-prototype --save --headless
 
 #############################
