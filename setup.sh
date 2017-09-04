@@ -214,3 +214,15 @@ done
 # CAUTION!! Not sude how to use varables in commands
 google-oauthlib-tool --client-secrets $authLocation --scope https://www.googleapis.com/auth/assistant-sdk-prototype --save --headless
 
+#############################
+### Set autostart on boot ###
+#############################
+
+# make a little script to start enviroment and assistant demo
+cp startGoogleAssistant.sh /home/pi/
+chmod 775 startGoogleAssistant.sh
+
+echo "/home/pi/startGoogleAssistant.sh" >> /home/pi/.config/lxsession/LXDE-pi/autostart
+echo "Google Assistant Demo autostart config complete, rebooting"
+
+sudo reboot
