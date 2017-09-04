@@ -20,7 +20,7 @@ checkInternet(){
 	if [ $? -eq 0 ]
 	then
 		echo "Internet connection OK, updating dependencies"
-		sudo apt-get update
+		#sudo apt-get update
 	else
 		# so if no internet
 		read -p "Please check your internet connection. enter Y when done..... " response
@@ -172,7 +172,7 @@ pcm.speaker {
 
 checkInternet
 
-AudioConfig
+#AudioConfig
 
 ##################
 ### API Config ###
@@ -181,9 +181,10 @@ AudioConfig
 echo "Audio config complete, please head to https://developers.google.com/assistant/sdk/develop/python/config-dev-project-and-account to enable API"
 
 # Wait for user to choose which method to download auth file
-while [ $response != "Y" ] || [ $response != "y" ]
+response="N"
+while [ $response != "Y" ]
 do
-	read -p "When you finished all steps, please enter Y" response
+	read -p "When you finished all steps, please enter Y " response
 done
 
 ########################
@@ -198,6 +199,7 @@ sudo apt-get update
 # WARNING!!! This is for PYTHON 3
 sudo apt-get install python3-dev python3-venv
 python3 -m venv env
+echo "Installing python tool"
 env/bin/python -m pip install --upgrade pip setuptools
 source env/bin/activate
 python -m pip install --upgrade google-assistant-library
@@ -206,7 +208,7 @@ python -m pip install --upgrade google-auth-oauthlib[tool]
 # ask for auth json location
 while [ $authLocation -z ]
 do
-	read -p "Please enter the ABSOLUTE FILE PATH to your auth json" authLocation
+	read -p "Please enter the ABSOLUTE FILE PATH to your auth json: " authLocation
 done
 
 # CAUTION!! Not sude how to use varables in commands
