@@ -1,4 +1,8 @@
 #!/bin/bash
+# Author: Daniel Wang
+# Date: 2017/09/04
+# Based on https://developers.google.com/assistant/sdk/develop/python/
+# Google Assistant API Ver.: 0.0.3
 
 # switch to root
 cd ~
@@ -164,6 +168,26 @@ pcm.speaker {
 	fi
 }
 
+
+
 checkInternet
 
 AudioConfig
+
+##################
+### API Config ###
+##################
+
+echo "Audio config complete, please head to https://developers.google.com/assistant/sdk/develop/python/config-dev-project-and-account to enable API"
+
+# Wait for user to choose which method to download auth file
+while [ $response != "Y" ] || [ $response != "y" ]
+do
+	read -p "When you finished all steps, please enter Y" response
+done
+
+########################
+### Download and Run ###
+########################
+
+echo "Starting to download essential packages"
