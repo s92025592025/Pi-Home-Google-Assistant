@@ -122,6 +122,9 @@ AudioConfig(){
 		# find targeted speaker
 		echo "Here are a list of speaker devices..."
 		aplay -l
+		# empty the variable
+		speakerCard=
+		speakerDevice=
 		while [[ $((speakerCard)) != $speakerCard ]] || [[ $((speakerDevice)) != $speakerDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " speakerCard
@@ -131,6 +134,9 @@ AudioConfig(){
 		# find targeted mic
 		echo "Here are a list of mic devices..."
 		arecord -l
+		# empty the variable
+		micCard=
+		micDevice=
 		while [[ $((micCard)) != $micCard ]] || [[ $((micDevice)) != $micDevice ]]
 		do
 			read -p "What is the card number you want to use? (on board port goes for 0, external sound card mostly 1) " micCard
