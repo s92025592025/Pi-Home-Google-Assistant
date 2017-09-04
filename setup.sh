@@ -20,7 +20,7 @@ checkInternet(){
 	if [ $? -eq 0 ]
 	then
 		echo "Internet connection OK, updating dependencies"
-		#sudo apt-get update
+		sudo apt-get update
 	else
 		# so if no internet
 		read -p "Please check your internet connection. enter Y when done..... " response
@@ -191,3 +191,24 @@ done
 ########################
 
 echo "Starting to download essential packages"
+
+# update dependencies
+sudo apt-get update
+
+# WARNING!!! This is for PYTHON 3
+sudo apt-get install python3-dev python3-venv
+python3 -m venv env
+env/bin/python -m pip install --upgrade pip setuptools
+source env/bin/activate
+python -m pip install --upgrade google-assistant-library
+python -m pip install --upgrade google-auth-oauthlib[tool]
+
+# ask for auth json location
+while [ $authLocation -z ]
+do
+	read -p "Please enter the ABSOLUTE FILE PATH to your auth json" authLocation
+done
+
+# CAUTION!! Not sude how to use varables in commands
+google-oauthlib-tool --client-secrets $authLocation --scope https://www.googleapis.com/auth/assistant-sdk-prototype --save --headless
+
