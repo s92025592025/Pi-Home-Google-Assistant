@@ -211,7 +211,7 @@ python -m pip install --upgrade google-assistant-library
 python -m pip install --upgrade google-auth-oauthlib[tool]
 
 # ask for auth json location
-while [ -r $authLocation ]
+while [ $authLocation -z ]
 do
 	read -p "Please enter the ABSOLUTE FILE PATH to your auth json: " authLocation
 done
